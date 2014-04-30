@@ -39,8 +39,8 @@
 
         .CodeMirror {
             float: left;
-            width: 65%;
-            height: 620px;
+            width: 800px;
+            height: 650px;
             border: 0px solid black;
 
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
@@ -69,33 +69,33 @@
 
             /*preview window*/
         iframe {
-            width: 35%;
+            /*width: 62.5%;*/
             float: left;
-            height: 550px;
+            height: 650px;
             /*background: #1d1f20;*/
             /*color: #ffffff;*/
-            border: 0px solid black;
+            border: 1px solid #a21313;
         }
 
             /*code window*/
         article {
             padding: 0px;
             border-right: 0px;
-            margin-left: 230px;
-            min-width: 2368px;
+            margin-left: 200px;
+            min-width: 1404px;
         }
 
             /*left navbar*/
         #nav {
             text-align: center;
             right: 0;
-            width: 230px;
+            width: 200px;
             padding-right: 0px;
             overflow-y: auto;
         }
 
         .left-nav-width {
-            width: 230px;
+            width: 200px;
         }
 
         #nav ul a {
@@ -123,25 +123,14 @@
         <li><a href="#">手册</a>	
     </ul>
 
-    <a class=active href="#">
-        <h3>开启文件</h3>
-    </a>
-
-    <h5 style="color:#A21313">        
-        <input type="file" id="fileInput" class="left-nav-width">html</input>        
-        <input type="file" id="fileInput_js" class="left-nav-width">javascript</input>        
-        <input type="file" id="fileInput_css" class="left-nav-width">css</input>
+    <h5 style="color:#A21313">
+        <input type="file" id="fileInput" class="left-nav-width">
     </h5>
 </div>
 
 <article style="min-height: inherit">
 
     <div>
-        <ul id="myTab" class="nav nav-tabs">
-            <li class="active"><a href="#code_page" data-toggle="tab">HTML</a></li>
-            <li class=""><a href="#code_js_page" data-toggle="tab">JS</a></li>
-            <li class=""><a href="#code_css_page" data-toggle="tab">CSS</a></li>
-        </ul>
         <div id="myTabContent" class="tab-content">
             <div class="tab-pane active in" id="code_page">
                 <textarea class="tab-pane active in" id=code name=code>
@@ -172,21 +161,17 @@
 </html>
                 </textarea>
             </div>
-
-            <div class="tab-pane" id="code_js_page">
-                <textarea class="tab-pane" id=code_js name=code_js></textarea>
-            </div>
-
-            <div class="tab-pane" id="code_css_page">
-                <textarea class="tab-pane" id=code_css name=code_css></textarea>
-            </div>
         </div>
     </div>
 
-    <iframe id=preview  scrolling="auto" frameborder="0"></iframe>
+    <iframe id=preview-pad  scrolling="auto" frameborder="0" style="width: 600px"></iframe>
+    <iframe id=preview-mobile  scrolling="auto" frameborder="0" style="width: 350px"></iframe>
+    <iframe id=preview-desk  scrolling="auto" frameborder="0" style="width: 1050px"></iframe>
 
     <script name=code>
-        var delay;
+        var delay_mobile;
+        var delay_pad;
+        var delay_desk;
         // Initialize CodeMirror editor for html5.
         var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
             //choose language
@@ -221,87 +206,27 @@
         editor.setOption("theme", "tomorrow-night-eighties");
         // update preview window when code changed.
         editor.on("change", function () {
-            clearTimeout(delay);
-            delay = setTimeout(updatePreview, 300);
+            clearTimeout(delay_mobile);
+            clearTimeout(delay_pad);
+            clearTimeout(delay_desk);
+            delay_mobile = setTimeout(updatePreview('preview-mobile'), 300);
+            delay_pad = setTimeout(updatePreview('preview-pad'), 300);
+            delay_desk = setTimeout(updatePreview('preview-desk'), 300);
         });
-        function updatePreview() {
-            var previewFrame = document.getElementById('preview');
+        function updatePreview(preview_id) {
+            var previewFrame = document.getElementById(preview_id);
             var preview = previewFrame.contentDocument || previewFrame.contentWindow.document;
             preview.open();
             preview.write(editor.getValue());
             preview.close();
         }
-        setTimeout(updatePreview, 300);
+        delay_mobile = setTimeout(updatePreview('preview-mobile'), 300);
+        delay_pad = setTimeout(updatePreview('preview-pad'), 300);
+        delay_desk = setTimeout(updatePreview('preview-desk'), 300);
 
-    </script>
-
-    <script name=code_js>
-        // Initialize CodeMirror editor for js.
-        var editor_js = CodeMirror.fromTextArea(document.getElementById('code_js'), {
-            mode: "javascript",
-//            styleActiveLine: true,
-            lineNumbers: true,
-            lineWrapping: true,
-            // addd-on lint && folding
-            gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-            lint: true,
-            foldGutter: true,
-            // add-on auto-close-brackets
-            autoCloseBrackets: true,
-            // add-on full-screen key:F11
-            extraKeys: {
-                "F11": function (cm) {
-                    cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-                },
-                "Esc": function (cm) {
-                    if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-                }
-            }
-        });
-        editor_js.setOption("theme", "tomorrow-night-eighties");
-        // update preview window when code changed.
-        editor_js.on("change", function () {
-            clearTimeout(delay);
-            delay = setTimeout(updatePreview, 300);
-        });
-
-    </script>
-
-    <script name=code_css>
-        // Initialize CodeMirror editor for css.
-        var editor_css = CodeMirror.fromTextArea(document.getElementById('code_css'), {
-            mode: "css",
-//            styleActiveLine: true,
-            lineNumbers: true,
-            lineWrapping: true,
-            // addd-on lint && folding
-            gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-            lint: true,
-            foldGutter: true,
-            // add-on auto-close-brackets
-            autoCloseBrackets: true,
-            // add-on full-screen key:F11
-            extraKeys: {
-                "F11": function (cm) {
-                    cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-                },
-                "Esc": function (cm) {
-                    if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-                }
-            }
-        });
-        editor_css.setOption("theme", "tomorrow-night-eighties");
-        // update preview window when code changed.
-        editor_css.on("change", function () {
-            clearTimeout(delay);
-            delay = setTimeout(updatePreview, 300);
-        });
     </script>
 
     <script name=choose_file>
-        //choose file to show in editor html
-        //choose file to show in editor js
-        //choose file to show in editor css
         window.onload = function () {
             var fileInput = document.getElementById('fileInput');
             fileInput.addEventListener('change', function (e) {
@@ -311,26 +236,6 @@
                     editor.setValue(reader.result)
                 }
                 reader.readAsText(file);
-            });
-
-            var fileInput_js = document.getElementById('fileInput_js');
-            fileInput_js.addEventListener('change', function (e) {
-                var file_js = fileInput_js.files[0];
-                var reader_js = new FileReader();
-                reader_js.onload = function (e) {
-                    editor_js.setValue(reader_js.result)
-                }
-                reader_js.readAsText(file_js);
-            });
-
-            var fileInput_css = document.getElementById('fileInput_css');
-            fileInput_css.addEventListener('change', function (e) {
-                var file_css = fileInput_css.files[0];
-                var reader_css = new FileReader();
-                reader_css.onload = function (e) {
-                    editor_css.setValue(reader_css.result)
-                }
-                reader_css.readAsText(file_css);
             });
         }
     </script>
